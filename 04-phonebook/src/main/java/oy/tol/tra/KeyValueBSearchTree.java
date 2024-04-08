@@ -51,29 +51,30 @@ public class KeyValueBSearchTree<K extends Comparable<K>, V> implements Dictiona
         // TODO: Implement this
         // Remember null check.
         // If root is null, should go there.
-        
-            // update the root node. But it may have children
-            // so do not just replace it with this new node but set
-            // the keys and values for the already existing root.   
-                if (key == null || value == null) {  
-                    throw new IllegalArgumentException("Key and value cannot be null!");  
-                }  
-                TreeNode<K, V> newNode = new TreeNode<>(key, value);    
-                if (root == null) {  
-                    root = newNode;  
-                    count++;  
-                    return true;   
-                } else {    
-                    if (insertNode(root, newNode)) {  
-                        count++;   
-                        return true;  
-                    } else {  
-                        return false;   
-                    }  
-                }  
-            }  
-              
-    private boolean insertNode(TreeNode<K, V> presentNode, TreeNode<K, V> newNode) {
+
+        // update the root node. But it may have children
+        // so do not just replace it with this new node but set
+        // the keys and values for the already existing root.
+        if (key == null || value == null) {
+            throw new IllegalArgumentException("Key and value cannot be null!");
+        }
+        TreeNode<K, V> newNode = new TreeNode<>(key, value);
+        if (root == null) {
+            root = newNode;
+            count++;
+            return true;
+        }
+        int hash = key.hashCode();
+        int added = root.insert(key, value, hash);
+        if (added > 0) {
+            count++;
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    /*private boolean insertNode(TreeNode<K, V> presentNode, TreeNode<K, V> newNode) {
         int cmp = newNode.keyValue.getKey().compareTo(presentNode.keyValue.getKey());
         if (cmp < 0) {
             if (presentNode.left == null) {
@@ -93,8 +94,8 @@ public class KeyValueBSearchTree<K extends Comparable<K>, V> implements Dictiona
             presentNode.keyValue.setValue(newNode.keyValue.getValue());
             return false;
         }
-    }
-        
+    }*/
+
 
     @Override
     public V find(K key) throws IllegalArgumentException {
@@ -102,20 +103,8 @@ public class KeyValueBSearchTree<K extends Comparable<K>, V> implements Dictiona
         if (key == null)
             throw new IllegalArgumentException("Key cannot be null!");
 
-        TreeNode<K, V> currentNode = root;
-
-        while (currentNode != null) {
-            int a = key.compareTo(currentNode.keyValue.getKey());
-
-            if (a < 0) {
-                currentNode = currentNode.left;
-            } else if (a > 0) {
-                currentNode = currentNode.right;
-            } else {
-                return currentNode.keyValue.getValue();
-            }
-        }
-        return null;
+        int hash = key.hashCode();
+        return root.find(key, hash);
     }
 
     @Override
